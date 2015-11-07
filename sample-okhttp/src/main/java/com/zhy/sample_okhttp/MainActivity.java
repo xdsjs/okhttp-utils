@@ -21,26 +21,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity
-{
+public class MainActivity extends AppCompatActivity {
 
     private TextView mTv;
     private ImageView mImageView;
     private ProgressBar mProgressBar;
 
-    public abstract class MyResultCallback<T> extends ResultCallback<T>
-    {
+    public abstract class MyResultCallback<T> extends ResultCallback<T> {
 
         @Override
-        public void onBefore(Request request)
-        {
+        public void onBefore(Request request) {
             super.onBefore(request);
             setTitle("loading...");
         }
 
         @Override
-        public void onAfter()
-        {
+        public void onAfter() {
             super.onAfter();
             setTitle("Sample-okHttp");
         }
@@ -49,28 +45,24 @@ public class MainActivity extends AppCompatActivity
     private ResultCallback<String> stringResultCallback = new MyResultCallback<String>()//
     {
         @Override
-        public void onError(Request request, Exception e)
-        {
+        public void onError(Request request, Exception e) {
             Log.e("TAG", "onError , e = " + e.getMessage());
         }
 
         @Override
-        public void onResponse(String response)
-        {
+        public void onResponse(String response) {
             Log.e("TAG", "onResponse , response = " + response);
             mTv.setText("operate success");
         }
 
         @Override
-        public void inProgress(float progress)
-        {
+        public void inProgress(float progress) {
             mProgressBar.setProgress((int) (100 * progress));
         }
     };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -80,65 +72,84 @@ public class MainActivity extends AppCompatActivity
         mProgressBar.setMax(100);
     }
 
-    public void getUser(View view)
-    {
+    public void ClassTest(View view) {
+        final String url = "http://115.28.26.202/ClassPlus/class/client/create";
+
+        File file = new File(Environment.getExternalStorageDirectory(), "class.jpg");
+        if (!file.exists()) {
+            Toast.makeText(MainActivity.this, "文件不存在，请修改文件路径", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        new OkHttpRequest.Builder()
+                .url(url)
+                .addParams("grade", "11")
+                .addParams("account", "13519140151")
+                .addParams("classname", "className")
+                .addParams("Scname", "Scname")
+                .addParams("Suid", "Suid")
+                .addParams("Longitude", "Longitude")
+                .addParams("Latitude", "Latitude")
+                .files(new Pair<String, File>("file", file))
+                .post(new MyResultCallback<String>() {
+                    @Override
+                    public void onError(Request request, Exception e) {
+                        e.printStackTrace();
+                        Log.e("---------------->", "错误!!!!");
+                    }
+
+                    @Override
+                    public void onResponse(String response) {
+                        Log.e("---------------->", response);
+                    }
+                });
+    }
+
+    public void getUser(View view) {
 
         final String url = "https://raw.githubusercontent.com/hongyangAndroid/okhttp-utils/master/user.gson";
         new OkHttpRequest.Builder()
                 .url(url)
-                .get(new MyResultCallback<User>()
-                {
+                .get(new MyResultCallback<User>() {
                     @Override
-                    public void onError(Request request, Exception e)
-                    {
+                    public void onError(Request request, Exception e) {
                         Log.e("TAG", "onError , e = " + e.getMessage());
                     }
 
                     @Override
-                    public void onResponse(User response)
-                    {
+                    public void onResponse(User response) {
                         Log.e("TAG", "onResponse , user = " + response);
                         mTv.setText(response.username);
                     }
                 });
 
-        new Thread()
-        {
+        new Thread() {
             @Override
-            public void run()
-            {
-                try
-                {
+            public void run() {
+                try {
                     User u = new OkHttpRequest.Builder().url(url).get(User.class);
                     Log.e("TAG", "syn u = " + u);
-                } catch (IOException e)
-                {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
 
             }
         }.start();
-
-
     }
 
 
-    public void getUsers(View view)
-    {
+    public void getUsers(View view) {
         Map<String, String> params = new HashMap<String, String>();
         params.put("name", "zhy");
         String url = "https://raw.githubusercontent.com/hongyangAndroid/okhttp-utils/master/users.gson";
-        new OkHttpRequest.Builder().url(url).params(params).post(new MyResultCallback<List<User>>()
-        {
+        new OkHttpRequest.Builder().url(url).params(params).post(new MyResultCallback<List<User>>() {
             @Override
-            public void onError(Request request, Exception e)
-            {
+            public void onError(Request request, Exception e) {
                 Log.e("TAG", "onError , e = " + e.getMessage());
             }
 
             @Override
-            public void onResponse(List<User> users)
-            {
+            public void onResponse(List<User> users) {
                 Log.e("TAG", "onResponse , users = " + users);
                 mTv.setText(users.get(0).toString());
             }
@@ -147,22 +158,18 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void getSimpleString(View view)
-    {
+    public void getSimpleString(View view) {
         String url = "https://raw.githubusercontent.com/hongyangAndroid/okhttp-utils/master/user.gson";
 
         new OkHttpRequest.Builder().url(url)
-                .get(new MyResultCallback<String>()
-                {
+                .get(new MyResultCallback<String>() {
                     @Override
-                    public void onError(Request request, Exception e)
-                    {
+                    public void onError(Request request, Exception e) {
                         Log.e("TAG", "onError , e = " + e.getMessage());
                     }
 
                     @Override
-                    public void onResponse(String response)
-                    {
+                    public void onResponse(String response) {
                         mTv.setText(response);
                     }
                 });
@@ -170,61 +177,50 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void getHtml(View view)
-    {
+    public void getHtml(View view) {
         //https://192.168.56.1:8443/
         //https://kyfw.12306.cn/otn/
         //https://192.168.187.1:8443/
         String url = "http://www.csdn.net/";
-        new OkHttpRequest.Builder().url(url).get(new MyResultCallback<String>()
-        {
+        new OkHttpRequest.Builder().url(url).get(new MyResultCallback<String>() {
             @Override
-            public void onError(Request request, Exception e)
-            {
+            public void onError(Request request, Exception e) {
                 Log.e("TAG", "onError" + e.getMessage());
             }
 
             @Override
-            public void onResponse(String response)
-            {
+            public void onResponse(String response) {
                 mTv.setText(response);
             }
         });
     }
 
-    public void getHttpsHtml(View view)
-    {
+    public void getHttpsHtml(View view) {
         String url = "https://kyfw.12306.cn/otn/";
-        new OkHttpRequest.Builder().url(url).get(new MyResultCallback<String>()
-        {
+        new OkHttpRequest.Builder().url(url).get(new MyResultCallback<String>() {
             @Override
-            public void onError(Request request, Exception e)
-            {
+            public void onError(Request request, Exception e) {
                 Log.e("TAG", "onError" + e.getMessage());
             }
 
             @Override
-            public void onResponse(String response)
-            {
+            public void onResponse(String response) {
                 mTv.setText(response);
             }
         });
     }
 
-    public void getImage(View view)
-    {
+    public void getImage(View view) {
         String url = "http://images.csdn.net/20150817/1.jpg";
         mTv.setText("");
         new OkHttpRequest.Builder().url(url).imageView(mImageView).displayImage(null);
     }
 
 
-    public void uploadFile(View view)
-    {
+    public void uploadFile(View view) {
 
-        File file = new File(Environment.getExternalStorageDirectory(), "messenger_01.png");
-        if (!file.exists())
-        {
+        File file = new File(Environment.getExternalStorageDirectory(), "class.jpg");
+        if (!file.exists()) {
             Toast.makeText(MainActivity.this, "文件不存在，请修改文件路径", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -246,12 +242,10 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    public void multiFileUpload(View view)
-    {
+    public void multiFileUpload(View view) {
         File file = new File(Environment.getExternalStorageDirectory(), "messenger_01.png");
         File file2 = new File(Environment.getExternalStorageDirectory(), "test1.txt");
-        if (!file.exists())
-        {
+        if (!file.exists()) {
             Toast.makeText(MainActivity.this, "文件不存在，请修改文件路径", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -265,13 +259,10 @@ public class MainActivity extends AppCompatActivity
                 .params(params)
                 .files(new Pair<String, File>("mFile", file), new Pair<String, File>("mFile", file2))//
                 .upload(stringResultCallback);
-
-
     }
 
 
-    public void downloadFile(View view)
-    {
+    public void downloadFile(View view) {
         String url = "https://github.com/hongyangAndroid/okhttp-utils/blob/master/gson-2.2.1.jar?raw=true";
         new OkHttpRequest.Builder()
                 .url(url)
@@ -281,8 +272,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy()
-    {
+    protected void onDestroy() {
         super.onDestroy();
 //        OkHttpClientManager.cancelTag(this);
     }

@@ -38,7 +38,5 @@ public class MyApplication extends Application
                         .writeUtf8(CER_12306)
                         .inputStream()});
         OkHttpClientManager.getInstance().getOkHttpClient().setConnectTimeout(100000, TimeUnit.MILLISECONDS);
-
-
     }
 }

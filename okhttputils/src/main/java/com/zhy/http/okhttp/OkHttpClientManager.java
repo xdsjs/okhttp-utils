@@ -341,7 +341,5 @@ public class OkHttpClientManager
             return new X509Certificate[0];
         }
     }
-
-
 }
 

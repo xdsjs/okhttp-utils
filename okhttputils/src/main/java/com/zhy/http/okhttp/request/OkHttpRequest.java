@@ -258,8 +258,6 @@ public abstract class OkHttpRequest
             OkHttpRequest request = new OkHttpDisplayImgRequest(url, tag, params, headers, imageView, errorResId);
             request.invokeAsyn(callback);
         }
-
-
     }
 
 
