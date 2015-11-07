@@ -19,8 +19,7 @@ import java.util.Map;
 /**
  * Created by zhy on 15/11/6.
  */
-public abstract class OkHttpRequest
-{
+public abstract class OkHttpRequest {
 
     protected OkHttpClientManager mOkHttpClientManager = OkHttpClientManager.getInstance();
 
@@ -35,8 +34,7 @@ public abstract class OkHttpRequest
     protected Map<String, String> headers;
 
     protected OkHttpRequest(String url, String tag,
-                            Map<String, String> params, Map<String, String> headers)
-    {
+                            Map<String, String> params, Map<String, String> headers) {
         mOkHttpClient = mOkHttpClientManager.getOkHttpClient();
         this.url = url;
         this.tag = tag;
@@ -48,59 +46,50 @@ public abstract class OkHttpRequest
 
     protected abstract RequestBody buildRequestBody();
 
-    protected void prepareInvoked(ResultCallback callback)
-    {
+    protected void prepareInvoked(ResultCallback callback) {
         requestBody = buildRequestBody();
         requestBody = wrapRequestBody(requestBody, callback);
         request = buildRequest();
     }
 
 
-    public void invokeAsyn(ResultCallback callback)
-    {
+    public void invokeAsyn(ResultCallback callback) {
         prepareInvoked(callback);
         mOkHttpClientManager.execute(request, callback);
     }
 
-    protected RequestBody wrapRequestBody(RequestBody requestBody, final ResultCallback callback)
-    {
+    protected RequestBody wrapRequestBody(RequestBody requestBody, final ResultCallback callback) {
         return requestBody;
     }
 
 
-    public <T> T invoke(Class<T> clazz) throws IOException
-    {
+    public <T> T invoke(Class<T> clazz) throws IOException {
         Request request = buildRequest();
         return mOkHttpClientManager.execute(request, clazz);
     }
 
 
-    protected void appendHeaders(Request.Builder builder, Map<String, String> headers)
-    {
-        if (builder == null)
-        {
+    protected void appendHeaders(Request.Builder builder, Map<String, String> headers) {
+        if (builder == null) {
             throw new IllegalArgumentException("builder can not be empty!");
         }
 
         Headers.Builder headerBuilder = new Headers.Builder();
         if (headers == null || headers.isEmpty()) return;
 
-        for (String key : headers.keySet())
-        {
+        for (String key : headers.keySet()) {
             headerBuilder.add(key, headers.get(key));
         }
         builder.headers(headerBuilder.build());
     }
 
-    public void cancel()
-    {
+    public void cancel() {
         if (!TextUtils.isEmpty(tag))
             mOkHttpClientManager.cancelTag(tag);
     }
 
 
-    public static class Builder
-    {
+    public static class Builder {
         private String url;
         private String tag;
         private Map<String, String> headers;
@@ -117,45 +106,38 @@ public abstract class OkHttpRequest
         private String content;
         private byte[] bytes;
         private File file;
+        private String json;
 
-        public Builder url(String url)
-        {
+        public Builder url(String url) {
             this.url = url;
             return this;
         }
 
-        public Builder tag(String tag)
-        {
+        public Builder tag(String tag) {
             this.tag = tag;
             return this;
         }
 
-        public Builder params(Map<String, String> params)
-        {
+        public Builder params(Map<String, String> params) {
             this.params = params;
             return this;
         }
 
-        public Builder addParams(String key, String val)
-        {
-            if (this.params == null)
-            {
+        public Builder addParams(String key, String val) {
+            if (this.params == null) {
                 params = new IdentityHashMap<>();
             }
             params.put(key, val);
             return this;
         }
 
-        public Builder headers(Map<String, String> headers)
-        {
+        public Builder headers(Map<String, String> headers) {
             this.headers = headers;
             return this;
         }
 
-        public Builder addHeader(String key, String val)
-        {
-            if (this.headers == null)
-            {
+        public Builder addHeader(String key, String val) {
+            if (this.headers == null) {
                 headers = new IdentityHashMap<>();
             }
             headers.put(key, val);
@@ -163,98 +145,88 @@ public abstract class OkHttpRequest
         }
 
 
-        public Builder files(Pair<String, File>... files)
-        {
+        public Builder files(Pair<String, File>... files) {
             this.files = files;
             return this;
         }
 
-        public Builder destFileName(String destFileName)
-        {
+        public Builder destFileName(String destFileName) {
             this.destFileName = destFileName;
             return this;
         }
 
-        public Builder destFileDir(String destFileDir)
-        {
+        public Builder destFileDir(String destFileDir) {
             this.destFileDir = destFileDir;
             return this;
         }
 
 
-        public Builder imageView(ImageView imageView)
-        {
+        public Builder imageView(ImageView imageView) {
             this.imageView = imageView;
             return this;
         }
 
-        public Builder errResId(int errorResId)
-        {
+        public Builder errResId(int errorResId) {
             this.errorResId = errorResId;
             return this;
         }
 
-        public Builder content(String content)
-        {
+        public Builder content(String content) {
             this.content = content;
             return this;
         }
 
-        public <T> T get(Class<T> clazz) throws IOException
-        {
+        public Builder json(String json) {
+            this.json = json;
+            return this;
+        }
+
+        public <T> T get(Class<T> clazz) throws IOException {
             OkHttpRequest request = new OkHttpGetRequest(url, tag, params, headers);
             return request.invoke(clazz);
         }
 
-        public OkHttpRequest get(ResultCallback callback)
-        {
+        public OkHttpRequest get(ResultCallback callback) {
             OkHttpRequest request = new OkHttpGetRequest(url, tag, params, headers);
             request.invokeAsyn(callback);
             return request;
         }
 
-        public <T> T post(Class<T> clazz) throws IOException
-        {
-            OkHttpRequest request = new OkHttpPostRequest(url, tag, params, headers, content, bytes, file);
+        public <T> T post(Class<T> clazz) throws IOException {
+            OkHttpRequest request = new OkHttpPostRequest(url, tag, params, headers, content, bytes, file, json);
             return request.invoke(clazz);
         }
 
-        public OkHttpRequest post(ResultCallback callback)
-        {
-            OkHttpRequest request = new OkHttpPostRequest(url, tag, params, headers, content, bytes, file);
+        public OkHttpRequest post(ResultCallback callback) {
+            OkHttpRequest request = new OkHttpPostRequest(url, tag, params, headers, content, bytes, file, json);
             request.invokeAsyn(callback);
             return request;
         }
 
-        public OkHttpRequest upload(ResultCallback callback)
-        {
+        public OkHttpRequest upload(ResultCallback callback) {
             OkHttpRequest request = new OkHttpUploadRequest(url, tag, params, headers, files);
             request.invokeAsyn(callback);
             return request;
         }
 
-        public <T> T upload(Class<T> clazz) throws IOException
-        {
+        public <T> T upload(Class<T> clazz) throws IOException {
             OkHttpRequest request = new OkHttpUploadRequest(url, tag, params, headers, files);
             return request.invoke(clazz);
         }
 
 
-        public OkHttpRequest download(ResultCallback callback)
-        {
+        public OkHttpRequest download(ResultCallback callback) {
             OkHttpRequest request = new OkHttpDownloadRequest(url, tag, params, headers, destFileName, destFileDir);
             request.invokeAsyn(callback);
             return request;
         }
 
-        public String download() throws IOException
-        {
+        public String download() throws IOException {
             OkHttpRequest request = new OkHttpDownloadRequest(url, tag, params, headers, destFileName, destFileDir);
             return request.invoke(String.class);
         }
 
-        public void displayImage(ResultCallback callback)
-        {
+        public void displayImage(ResultCallback callback) {
             OkHttpRequest request = new OkHttpDisplayImgRequest(url, tag, params, headers, imageView, errorResId);
             request.invokeAsyn(callback);
         }
